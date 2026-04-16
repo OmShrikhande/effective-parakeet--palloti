@@ -1,98 +1,256 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text, ScrollView, FlatList, TextInput, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Spacing, GlassTheme } from '../../constants/Theme';
+import { Products, Categories, Banners } from '../../constants/DemoData';
+import { ProductCard } from '../../components/ProductCard';
+import { GlassCard } from '../../components/GlassCard';
+import { BackgroundBlobs } from '../../components/BackgroundBlobs';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <View style={styles.container}>
+      {/* Dynamic Background */}
+      <BackgroundBlobs />
+      
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Welcome to</Text>
+            <Text style={styles.brandName}>ZYNIX</Text>
+          </View>
+          <TouchableOpacity style={styles.notificationBtn}>
+            <Ionicons name="notifications-outline" size={24} color="white" />
+            <View style={styles.badge} />
+          </TouchableOpacity>
+        </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+          {/* Search Bar with Glow */}
+          <GlassCard style={styles.searchContainer} intensity={10} hasGlow>
+            <Ionicons name="search" size={20} color={Colors.textSecondary} />
+            <TextInput
+              placeholder="Search latest trends..."
+              placeholderTextColor={Colors.textSecondary}
+              style={styles.searchInput}
+            />
+            <Ionicons name="options-outline" size={20} color={Colors.primary} />
+          </GlassCard>
+
+          {/* Banner Slider */}
+          <FlatList
+            data={Banners}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.bannerWrapper}>
+                <Image source={item.image} style={styles.bannerImage} />
+                <LinearGradient
+                  colors={['transparent', 'rgba(11, 16, 38, 0.9)']}
+                  style={styles.bannerOverlay}
+                />
+                <View style={styles.bannerContent}>
+                  <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+                  <Text style={styles.bannerTitle}>{item.title}</Text>
+                  <TouchableOpacity style={styles.shopNowBtn}>
+                     <Text style={styles.shopNowText}>Shop Now</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            style={styles.bannerList}
+          />
+
+          {/* Categories */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Categories</Text>
+            <TouchableOpacity><Text style={styles.viewAll}>View All</Text></TouchableOpacity>
+          </View>
+          <FlatList
+            data={Categories}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: Spacing.lg }}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.categoryItem}>
+                <GlassCard style={styles.categoryIcon} intensity={40}>
+                  <Ionicons name={item.icon as any} size={28} color={Colors.secondary} />
+                </GlassCard>
+                <Text style={styles.categoryName}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+
+          {/* Featured / New Arrivals */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Featured Items</Text>
+            <TouchableOpacity><Text style={styles.viewAll}>View All</Text></TouchableOpacity>
+          </View>
+          <View style={styles.productGrid}>
+            {Products.map((item) => (
+              <ProductCard key={item.id} product={item} />
+            ))}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  greeting: {
+    color: Colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  brandName: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: '900',
+    letterSpacing: 4,
+  },
+  notificationBtn: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    padding: 12,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  badge: {
+    position: 'absolute',
+    top: 12,
+    right: 14,
+    width: 8,
+    height: 8,
+    backgroundColor: Colors.primary,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: Colors.background,
+  },
+  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.xl,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  searchInput: {
+    flex: 1,
+    color: 'white',
+    marginHorizontal: 12,
+    fontSize: 16,
+    fontWeight: '500',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  bannerList: {
+    marginBottom: Spacing.xl,
+  },
+  bannerWrapper: {
+    width: width,
+    height: 240,
+    paddingHorizontal: Spacing.lg,
+  },
+  bannerImage: {
+    width: width - Spacing.lg * 2,
+    height: '100%',
+    borderRadius: 32,
+  },
+  bannerOverlay: {
     position: 'absolute',
+    bottom: 0,
+    left: Spacing.lg,
+    right: Spacing.lg,
+    height: '70%',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+  },
+  bannerContent: {
+    position: 'absolute',
+    bottom: 30,
+    left: 45,
+  },
+  bannerSubtitle: {
+    color: Colors.secondary,
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  bannerTitle: {
+    color: 'white',
+    fontSize: 32,
+    fontWeight: '900',
+    marginBottom: 12,
+  },
+  shopNowBtn: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  shopNowText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  sectionTitle: {
+    color: 'white',
+    fontSize: 22,
+    fontWeight: '800',
+  },
+  viewAll: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  categoryItem: {
+    alignItems: 'center',
+    marginRight: 24,
+  },
+  categoryIcon: {
+    width: 68,
+    height: 68,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderRadius: 24,
+  },
+  categoryName: {
+    color: Colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  productGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: Spacing.lg,
+    justifyContent: 'space-between',
   },
 });
